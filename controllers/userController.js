@@ -146,7 +146,7 @@ const logIn = async (req, res) => {
 
       if (checkEmail.isVerified === true) {
         res.status(200).json({
-          message: "Login Successfully! Welcome " + checkEmail.userName,
+          message: "Login Successfully! Welcome " + checkEmail.Fullname,
           token: token
         })
         checkEmail.token = token;
