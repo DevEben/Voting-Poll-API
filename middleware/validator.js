@@ -17,13 +17,13 @@ const validateUser = (data) => {
                 'string.min': "Phone number must be atleast 11 digit long e.g: 08123456789",
                 'any.required': "Please phone number is required"
             }),
-            password: joi.string().min(8).max(20).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$/).trim().required().messages({
+            password: joi.string().min(8).max(20).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/).trim().required().messages({
                 'string.empty': "Password field can't be left empty",
                 'string.pattern.base': 'Password must contain Lowercase, Uppercase, Numbers, and special characters',
                 'string.min': "Password must be at least 8 characters long",
                 'any.required': "Please password field is required",
             }),
-            confirmPassword: joi.string().min(8).max(20).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$/).trim().valid(joi.ref('password')).required().messages({
+            confirmPassword: joi.string().min(8).max(20).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/).trim().valid(joi.ref('password')).required().messages({
                 'string.empty': "Password field can't be left empty",
                 'string.pattern.base': 'Password must contain Lowercase, Uppercase, Numbers, and special characters',
                 'string.min': "Password must be at least 8 characters long",
@@ -47,7 +47,7 @@ const validateUserLogin = (data) => {
                 'string.empty': "Email field can't be left empty",
                 'any.required': "Please Email is required"
             }),
-            password: joi.string().min(8).max(20).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$/).trim().required().messages({
+            password: joi.string().min(8).max(20).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/).trim().required().messages({
                 'string.empty': "Password field can't be left empty",
                 'string.pattern.base': 'Password must contain Lowercase, Uppercase, Numbers, and special characters',
                 'string.min': "Password must be at least 8 characters long",
