@@ -28,10 +28,10 @@ const userSchema = new mongoose.Schema({
         type: String,
     },
     newCode: {
-        type: Number,
+        type: String,
     },
     userInput: {
-        type: Number,
+        type: String,
     },
     polls: [{
         type: mongoose.Schema.Types.ObjectId,
