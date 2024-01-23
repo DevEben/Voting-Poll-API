@@ -3,7 +3,7 @@ const express=require('express');
 const router=express.Router();
 
 const { signUp, verify, resendOTP, logIn, forgotPassword, resetPassword, signOut, makeAdmin, } = require('../controllers/userController');
-const { createPoll, getPoll, votePoll, viewWinner, deletePoll, deleteOption, viewAllPoll, } =require('../controllers/pollController');
+const { createPoll, getPoll, votePoll, verifyVoter, viewWinner, deletePoll, deleteOption, viewAllPoll, } =require('../controllers/pollController');
 const { authenticate } = require('../middleware/authentation');
 
 //endpoint to register a new user
@@ -41,6 +41,9 @@ router.get('/api/polls/:id', getPoll);
 
 // API to vote on a poll
 router.post('/api/polls/:id/vote', votePoll);
+
+// API to verify voter's email
+router.post('/api/verify-voters/:pollId', verifyVoter);
 
 // API to get the winner of a poll
 router.get('/api/polls/:id/winner', viewWinner);

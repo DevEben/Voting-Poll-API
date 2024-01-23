@@ -1,6 +1,8 @@
 const Poll = require('../models/pollModel');
 const userModel = require("../models/userModel");
 const {validateVoteEmail} = require("../middleware/validator");
+const { generateDynamicEmail } = require('../emailText');
+const sendEmail = require('../email');
 
 
 // Function to create a new poll
@@ -74,12 +76,12 @@ const votePoll = async (req, res) => {
       // Validate required parameters
       if (!email) {
          return res.status(400).json({
-            error: "Please provide both email and phone number"
+            error: "Please provide both email"
          });
       }
 
       // Additional validation for email and phoneNumber formats can be added here
-      const checkEmail = await Poll.findOne({ email });
+      const checkEmail = await Poll.findOne({ "Poll.email": { $elemMatch: { $eq: email } } });
       if (checkEmail) {
          return res.status(400).json({
             message: "User with this Email has already voted"
@@ -100,22 +102,62 @@ const votePoll = async (req, res) => {
       // Save the user's email in the poll document
       poll.email.push(email);
 
+      const generateOTP = () => {
+         const min = 1000;
+         const max = 9999;
+         return Math.floor(Math.random() * (max - min + 1)) + min;
+     }
+     const subject = 'Email Verification'
+     const otp = generateOTP();
+ 
+       poll.newCode = otp
+       const html = generateDynamicEmail(email, otp)
+       sendEmail({
+         email: email,
+         html,
+         subject
+       })
+
+      res.json({
+         message: `Congratulations ${email}, Please check your email for an OTP to verify your email address`,
+         success: true,
+      });
+
       // Update the poll with the vote
       poll.votes[option - 1]++;
       await poll.save();
 
-      res.json({
-         message: `Congratulations ${email}, you've successfully voted for ${poll.options[option - 1].text}`,
-         success: true,
-      });
    }
    } catch (error) {
-      console.error(error);
       res.status(500).json({ 
          error: 'Internal Server Error: ' + error.message 
       });
    }
 };
+
+
+
+//Function to verify Voters Email 
+const verifyVoter = async (req, res) => {
+   try {
+     const pollId = req.params.pollId;
+     const poll = await Poll.findById(pollId);
+     const { userInput } = req.body;
+ 
+     if (poll && poll.newCode.includes(userInput)) {
+       return res.status(200).json("You have been successfully verified.");
+     } else {
+       return res.status(400).json({
+         message: "Incorrect OTP, Please check your email for the code"
+       });
+     }
+   } catch (error) {
+     res.status(500).json({
+       error: 'Internal Server Error: ' + error.message
+     });
+   }
+ };
+ 
 
 
 
@@ -230,6 +272,7 @@ module.exports = {
    createPoll,
    getPoll,
    votePoll,
+   verifyVoter,
    viewWinner,
    deletePoll,
    deleteOption,

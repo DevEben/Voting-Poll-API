@@ -14,6 +14,12 @@ const pollSchema = new mongoose.Schema({
         String
     ],
     votes: [ Number ],
+    newCode: [{
+        type: String,
+    }],
+    userInput: [{
+        type: String,
+    }],
 });
 
 const Poll = mongoose.model('Poll', pollSchema);
