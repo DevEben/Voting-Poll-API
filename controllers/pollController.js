@@ -40,10 +40,10 @@ const createPoll = async (req, res) => {
 };
 
 
-// Function to get poll details
+// Function to get  a poll details
 const getPoll = async (req, res) => {
    try {
-      const pollId = req.params.id;
+      const pollId = req.params.pollId;
 
       const poll = await Poll.findById(pollId);
 
@@ -53,8 +53,7 @@ const getPoll = async (req, res) => {
 
       res.status(200).json(poll);
    } catch (error) {
-      console.error(error);
-      res.status(500).json({ 
+      return res.status(500).json({ 
          error: 'Internal Server Error' +error.message 
    });
    }
@@ -76,7 +75,7 @@ const votePoll = async (req, res) => {
       // Validate required parameters
       if (!email) {
          return res.status(400).json({
-            error: "Please provide both email"
+            error: "Please provide the email"
          });
       }
 
@@ -87,6 +86,7 @@ const votePoll = async (req, res) => {
             message: "User with this Email has already voted"
          });
       }
+      console.log(checkEmail)
 
       const poll = await Poll.findById(pollId);
 
@@ -95,7 +95,7 @@ const votePoll = async (req, res) => {
       }
 
       // Validate the option
-      if (!option || option < 1 || option > poll.options.length) {
+      if (!option || option > poll.options.length) {
          return res.status(400).json({ error: 'Invalid option' });
       }
 
@@ -123,8 +123,15 @@ const votePoll = async (req, res) => {
          success: true,
       });
 
-      // Update the poll with the vote
-      poll.votes[option - 1]++;
+      // Get's the index of the the option seleted 
+      let optIndex = poll.options.findIndex(item => item.text === option);
+
+      if (optIndex !== -1) {
+         // Update the poll with the vote
+         poll.votes[optIndex]++;
+     } else {
+         return res.status(404).json("Option not found in the poll");
+     }
       await poll.save();
 
    }

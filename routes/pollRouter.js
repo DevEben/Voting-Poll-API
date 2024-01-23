@@ -37,7 +37,7 @@ router.post("/signout/", authenticate, signOut)
 router.post('/api/polls', authenticate, createPoll);
 
 // API to get poll details
-router.get('/api/polls/:id', getPoll);
+router.get('/api/polls/:pollId', getPoll);
 
 // API to vote on a poll
 router.post('/api/polls/:id/vote', votePoll);

@@ -83,7 +83,7 @@ const signUp = async (req, res) => {
 };
 
 
-//Function to verify a new user with a link
+//Function to verify a new user with an OTP
 const verify = async (req, res) => {
   try {
     const id = req.params.id;
@@ -110,7 +110,7 @@ const verify = async (req, res) => {
   }
 };
 
-
+// Function to resend the OTP incase the user didn't get the OTP
 const resendOTP = async (req, res) => {
   try {
       const id = req.params.id;

@@ -70,8 +70,8 @@ const validateVoteEmail = (data) => {
                 'string.empty': "Email field can't be left empty",
                 'any.required': "Please Email is required"
             }),
-            option: joi.number().messages({
-                'number.empty': "Email field can't be left empty",
+            option: joi.string().messages({
+                'number.empty': "Option field can't be left empty",
             }),
         })
         return validateSchema.validate(data);
