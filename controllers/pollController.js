@@ -80,7 +80,7 @@ const votePoll = async (req, res) => {
       }
 
       // Additional validation for email and phoneNumber formats can be added here
-      const checkEmail = await Poll.findOne({ "Poll.email": { $elemMatch: { $eq: email } } });
+      const checkEmail = await Poll.findOne({ "email": { $elemMatch: { $eq: email } } });
       if (checkEmail) {
          return res.status(400).json({
             message: "User with this Email has already voted"
