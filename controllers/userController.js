@@ -51,9 +51,17 @@ const signUp = async (req, res) => {
       }, process.env.SECRET, { expiresIn: "300s" });
       user.token = token;
       const subject = 'Email Verification'
-      //jwt.verify(token, process.env.secret)
-      const link = `${req.protocol}://${req.get('host')}/verify/${user.id}/${user.token}`
-      const html = generateDynamicEmail(user.Fullname, link)
+
+      const generateOTP = () => {
+        const min = 1000;
+        const max = 9999;
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    
+    const otp = generateOTP();
+
+      user.newCode = otp
+      const html = generateDynamicEmail(user.Fullname, otp)
       sendEmail({
         email: user.email,
         html,
@@ -78,40 +86,26 @@ const signUp = async (req, res) => {
 const verify = async (req, res) => {
   try {
     const id = req.params.id;
-    const token = req.params.token;
+    //const token = req.params.token;
     const user = await userModel.findById(id);
+    const { userInput } = req.body;
 
-    // Verify the token
-    jwt.verify(token, process.env.SECRET);
-
-    // Update the user if verification is successful
-    const updatedUser = await userModel.findByIdAndUpdate(id, { isVerified: true }, { new: true });
-
-    if (updatedUser.isVerified === true) {
+    if (user && userInput === user.newCode) {
+      // Update the user if verification is successful
+      await userModel.findByIdAndUpdate(id, { isVerified: true }, { new: true });
+    } else {
+      return res.status(400).json({
+        message: "Incorrect OTP, Please check your email for the code"
+      })
+    }
+    if (user.isVerified === true) {
       return res.status(200).send("You have been successfully verified. Kindly visit the login page.");
     }
 
   } catch (err) {
-    if (err instanceof jwt.JsonWebTokenError) {
-      // Handle token expiration
-      const id = req.params.id;
-      const updatedUser = await userModel.findById(id);
-      const newtoken = jwt.sign({ email: updatedUser.email, Fullname: updatedUser.Fullname, }, process.env.SECRET, { expiresIn: "120s" });
-      updatedUser.token = newtoken;
-      updatedUser.save();
-
-      const link = `${req.protocol}://${req.get('host')}/verify/${id}/${updatedUser.token}`;
-      sendEmail({
-        email: updatedUser.email,
-        html: generateDynamicEmail(updatedUser.Fullname, link),
-        subject: "RE-VERIFY YOUR ACCOUNT"
-      });
-      return res.status(401).send("This link is expired. Kindly check your email for another email to verify.");
-    } else {
       return res.status(500).json({
         message: "Internal server error: " + err.message,
       });
-    }
   }
 };
 

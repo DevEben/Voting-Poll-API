@@ -27,6 +27,12 @@ const userSchema = new mongoose.Schema({
     token: {
         type: String,
     },
+    newCode: {
+        type: Number,
+    },
+    userInput: {
+        type: Number,
+    },
     polls: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Poll',
