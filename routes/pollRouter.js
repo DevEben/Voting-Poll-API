@@ -2,7 +2,7 @@ const express=require('express');
 
 const router=express.Router();
 
-const { signUp, verify, logIn, forgotPassword, resetPassword, signOut, makeAdmin, } = require('../controllers/userController');
+const { signUp, verify, resendOTP, logIn, forgotPassword, resetPassword, signOut, makeAdmin, } = require('../controllers/userController');
 const { createPoll, getPoll, votePoll, viewWinner, deletePoll, deleteOption, viewAllPoll, } =require('../controllers/pollController');
 const { authenticate } = require('../middleware/authentation');
 
@@ -10,7 +10,10 @@ const { authenticate } = require('../middleware/authentation');
 router.post('/signup', signUp);
 
 //endpoint to verify a registered user
-router.get('/verify/:id/', verify);
+router.post('/verify/:id/', verify);
+
+//endpoint to resend OTP to the user
+router.get('/resend-otp/:id', resendOTP)
 
 //endpoint to login a verified user
 router.post('/login', logIn);

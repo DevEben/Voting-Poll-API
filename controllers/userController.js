@@ -48,6 +48,7 @@ const signUp = async (req, res) => {
       const token = jwt.sign({
         Fullname: user.Fullname,
         email: user.email,
+        userId: user._id
       }, process.env.SECRET, { expiresIn: "300s" });
       user.token = token;
       const subject = 'Email Verification'
@@ -110,6 +111,41 @@ const verify = async (req, res) => {
 };
 
 
+const resendOTP = async (req, res) => {
+  try {
+      const id = req.params.id;
+      const user = await userModel.findById(id);
+
+      const generateOTP = () => {
+        const min = 1000;
+        const max = 9999;
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    const subject = 'Email Verification'
+    const otp = generateOTP();
+
+      user.newCode = otp
+      const html = generateDynamicEmail(user.Fullname, otp)
+      sendEmail({
+        email: user.email,
+        html,
+        subject
+      })
+      await user.save()
+      return res.status(200).json({
+        message: "Please check your email for the new OTP"
+      })
+      
+    
+  } catch (err) {
+    return res.status(500).json({
+      message: "Internal server error: " + err.message,
+    });
+  }
+};
+
+
+
 //Function to login a verified user
 const logIn = async (req, res) => {
   try {
@@ -138,13 +174,15 @@ const logIn = async (req, res) => {
         isAdmin: checkEmail.isAdmin
       }, process.env.SECRET, { expiresIn: "5h" });
 
+      checkEmail.token = token;
+      await checkEmail.save();
+
       if (checkEmail.isVerified === true) {
-        res.status(200).json({
+        return res.status(200).json({
           message: "Login Successfully! Welcome " + checkEmail.Fullname,
           token: token
         })
-        checkEmail.token = token;
-        await checkEmail.save();
+
       } else {
         res.status(400).json({
           message: "Sorry user not verified yet."
@@ -274,6 +312,7 @@ const signOut = async (req, res) => {
 module.exports = {
   signUp,
   verify,
+  resendOTP,
   logIn,
   forgotPassword,
   resetPassword,
