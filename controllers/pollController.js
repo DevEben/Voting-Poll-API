@@ -86,7 +86,6 @@ const votePoll = async (req, res) => {
             message: "User with this Email has already voted"
          });
       }
-      console.log(checkEmail)
 
       const poll = await Poll.findById(pollId);
 
